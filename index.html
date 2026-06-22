@@ -22,23 +22,7 @@ input,select,textarea{font-family:var(--fb);outline:none;color:var(--tx)}
 .dots{display:flex;gap:8px}.dots span{width:8px;height:8px;border-radius:50%;background:var(--ac);animation:dp 1.2s ease-in-out infinite}
 .dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
 @keyframes dp{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
-#setup{display:none;position:fixed;inset:0;background:var(--bg);z-index:800;overflow-y:auto}
-.su-in{max-width:440px;margin:0 auto;padding:20px 16px 48px}
-.su-logo{text-align:center;margin-bottom:20px}
-.su-ic{width:58px;height:58px;border-radius:16px;background:linear-gradient(135deg,#00c9a7,#0099ff);display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
-.su-ic svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.su-logo h1{font-family:var(--fh);font-size:22px;font-weight:700;color:var(--ac)}
-.su-logo p{font-size:11px;color:var(--mt);margin-top:3px}
-.sb2{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rr);padding:15px;margin-bottom:12px}
-.sn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--ac);color:#000;font-size:12px;font-weight:700;margin-bottom:8px}
-.sb2 h4{font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:6px}
-.sb2 p{font-size:12px;color:var(--mt);line-height:1.65}.sb2 a{color:var(--ac2);text-decoration:underline}
-.wb{background:rgba(243,156,18,.08);border:1px solid rgba(243,156,18,.25);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--wn);margin-bottom:12px;line-height:1.6}
-.su-fields{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-top:8px;display:flex;flex-direction:column;gap:8px}
-.su-fields label{font-size:10px;color:var(--mt);font-weight:700;letter-spacing:.4px;text-transform:uppercase}
-.su-fields input{background:var(--cd2);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;color:var(--tx);font-size:12px;width:100%}
-.su-fields input:focus{border-color:var(--ac)}
-.su-btn{width:100%;padding:13px;background:linear-gradient(135deg,#00c9a7,#0099cc);color:#fff;border-radius:10px;font-family:var(--fh);font-size:16px;font-weight:700;margin-top:12px;cursor:pointer}
+
 #auth{display:none;position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:500}
 .au-in{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:12px 16px 32px}
 .au-logo{text-align:center;padding:16px 0 10px}
@@ -236,28 +220,7 @@ input,select,textarea{font-family:var(--fb);outline:none;color:var(--tx)}
   <div id="splash-tag" style="font-size:11px;color:var(--mt);letter-spacing:1px">Your Shop · Online</div>
   <div class="dots"><span></span><span></span><span></span></div>
 </div>
-<div id="setup">
-<div class="su-in">
-  <div class="su-logo">
-    <div class="su-ic"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
-    <h1>ShopLink Setup</h1><p>One-time Firebase configuration</p>
-  </div>
-  <div class="wb">⚠️ This is a one-time setup. You need a free Firebase project.</div>
-  <div class="sb2"><div class="sn">1</div><h4>Create Firebase Project</h4><p>Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → Add project → Skip Analytics → Create</p></div>
-  <div class="sb2"><div class="sn">2</div><h4>Enable Firestore</h4><p>Build → Firestore Database → Create database → <b>Test mode</b> → Choose region → Enable</p></div>
-  <div class="sb2"><div class="sn">3</div><h4>Get Config & Paste Below</h4><p>Project Settings ⚙️ → General → Your apps → Web app → Register → Copy config values</p>
-    <div class="su-fields">
-      <div><label>API Key *</label><input id="su-api" placeholder="AIzaSy..."/></div>
-      <div><label>Auth Domain *</label><input id="su-auth" placeholder="project.firebaseapp.com"/></div>
-      <div><label>Project ID *</label><input id="su-proj" placeholder="your-project-id"/></div>
-      <div><label>Storage Bucket</label><input id="su-sb" placeholder="project.appspot.com"/></div>
-      <div><label>Messaging Sender ID</label><input id="su-ms" placeholder="123456789"/></div>
-      <div><label>App ID *</label><input id="su-app" placeholder="1:123:web:abc123"/></div>
-    </div>
-    <button class="su-btn" onclick="doSetup()">🚀 Connect Firebase & Launch</button>
-  </div>
-</div>
-</div>
+
 <div id="auth">
 <div class="au-in">
   <div class="au-logo">
@@ -302,7 +265,7 @@ input,select,textarea{font-family:var(--fb);outline:none;color:var(--tx)}
 <div class="mo" id="mo-prod"><div class="ms"><div class="mh"></div><div class="mt2" id="mpttl">Add Product</div>
   <div class="fg">
     <div class="fr"><div><label class="fl">Name *</label><input class="fi" id="mp-nm" placeholder="Product name"/></div><div><label class="fl">Brand</label><input class="fi" id="mp-br" placeholder="Brand..."/></div></div>
-    <div><label class="fl">Category</label><select class="fi fsel" id="mp-cat"><option>General</option><option>Electronics</option><option>Clothing</option><option>Food &amp; Grocery</option><option>Home &amp; Kitchen</option><option>Health &amp; Beauty</option><option>Sports</option><option>Books</option><option>Toys</option><option>Other</option></select></div>
+    <div><label class="fl">Category</label><select class="fi fsel" id="mp-cat"><option>General</option></select></div>
     <div class="fr"><div><label class="fl">Buy Price ₹</label><input class="fi" type="number" id="mp-buy" placeholder="0"/></div><div><label class="fl">Sell Price ₹ *</label><input class="fi" type="number" id="mp-sell" placeholder="0"/></div></div>
     <div class="fr"><div><label class="fl">Stock Qty</label><input class="fi" type="number" id="mp-qty" placeholder="0"/></div><div><label class="fl">Returnable?</label><select class="fi fsel" id="mp-ret"><option value="yes">Yes</option><option value="no">No – Final Sale</option></select></div></div>
     <div><label class="fl">Description</label><textarea class="fi fta" id="mp-desc" placeholder="Product details..."></textarea></div>
@@ -458,56 +421,58 @@ input,select,textarea{font-family:var(--fb);outline:none;color:var(--tx)}
 </div></div>
 <script>
 const ADMIN_MOBILE='9902022509';
+const FB_CONFIG={
+  apiKey:"AIzaSyDxYWRGEu2R2yIYoSNaPnLpklnqIaeq3pU",
+  authDomain:"shoplink-gunnal.firebaseapp.com",
+  projectId:"shoplink-gunnal",
+  storageBucket:"shoplink-gunnal.firebasestorage.app",
+  messagingSenderId:"657417465137",
+  appId:"1:657417465137:web:27aa9596e1225bd41bd410",
+  measurementId:"G-ZQC2B2DMS3"
+};
 let db=null;
 const D={products:[],orders:[],returns:[],users:[]};
 let U=null,ROLE=null,BUSY=false;
 let CART=[],ePid=null,eOid=null,rpUid=null,vOid=null,vRid=null;
-let PF='All',CPF='All',OTab='pending',RTab='pending';
+let PF='All',OTab='pending',RTab='pending';
 let _rpbuf='',pBuf='',_step='mobile',_mob='',_uname='',_newPin='';
 let sRole='admin',_lt=null,_custGPSLat=null,_custGPSLng=null;
 let _selAdminId=null,_notesCol='',_notesId='',_retOid='',_selPay='cod';
 const LOCK=['dispatched','delivered','cancelled'];
-const PCATS=['All','General','Electronics','Clothing','Food & Grocery','Home & Kitchen','Health & Beauty','Sports','Books','Toys','Other'];
-let BRAND={name:'ShopLink',tagline:'Your Shop · Online',emoji:'🛒',ownerName:'',ownerMobile:ADMIN_MOBILE,wa:'',email:'',address:'',city:'',hours:'',gst:''};
-
-function doSetup(){
-  const cfg={apiKey:gv('su-api'),authDomain:gv('su-auth'),projectId:gv('su-proj'),storageBucket:gv('su-sb'),messagingSenderId:gv('su-ms'),appId:gv('su-app')};
-  if(!cfg.apiKey||!cfg.authDomain||!cfg.projectId||!cfg.appId){toast('Fill API Key, Auth Domain, Project ID and App ID');return;}
-  ld('Connecting to Firebase...');
-  try{
-    firebase.initializeApp(cfg);
-    db=firebase.firestore();
-    db.settings({ignoreUndefinedProperties:true});
-    db.collection('config').doc('brand').set({init:true},{merge:true})
-      .then(function(){
-        localStorage.setItem('sl_fb_cfg',JSON.stringify(cfg));
-        hl();document.getElementById('setup').style.display='none';
-        showAuth();toast('✅ Firebase connected!');
-        loadAll().then(renderBrand);
-      }).catch(function(e){hl();toast('Firestore error: '+e.message);});
-  }catch(e){hl();toast('Firebase error: '+e.message);}
-}
+// Dynamic categories — loaded from Firebase, editable by admin
+let CATS=['General','Electronics','Clothing','Food & Grocery','Home & Kitchen','Health & Beauty','Sports','Books','Toys','Other'];
+let PCATS=['All',...CATS];
+let BRAND={name:'ShopLink',tagline:'Your Shop · Online',emoji:'🛒',ownerName:'',ownerMobile:ADMIN_MOBILE,wa:'',email:'',address:'',city:'',hours:'',gst:'',shopLat:null,shopLng:null,shopGPSAddr:''};
 
 async function init(){
-  const saved=localStorage.getItem('sl_fb_cfg');
-  if(!saved){hideSpl();document.getElementById('setup').style.display='block';return;}
   try{
-    const cfg=JSON.parse(saved);
-    firebase.initializeApp(cfg);
+    firebase.initializeApp(FB_CONFIG);
     db=firebase.firestore();
     db.settings({ignoreUndefinedProperties:true});
-  }catch(e){hideSpl();document.getElementById('setup').style.display='block';return;}
+  }catch(e){
+    document.getElementById('splash').innerHTML='<div style="padding:28px;text-align:center"><div style="font-size:2.5rem">⚠️</div><div style="font-family:Rajdhani,sans-serif;font-size:18px;font-weight:700;color:#e74c3c;margin-top:10px">Firebase Error</div><div style="font-size:12px;color:#7a8aa8;margin-top:8px;line-height:1.6">'+e.message+'</div></div>';
+    return;
+  }
   setTimeout(function(){hideSpl();loadAll().then(function(){renderBrand();showAuth();});},1000);
 }
 
 async function loadAll(){
   try{
-    const res=await Promise.all([fall('products'),fall('orders'),fall('returns'),fall('users'),loadBrand()]);
+    const res=await Promise.all([fall('products'),fall('orders'),fall('returns'),fall('users'),loadBrand(),loadCategories()]);
     D.products=res[0];D.orders=res[1];D.returns=res[2];D.users=res[3];
   }catch(e){console.warn('loadAll',e);}
 }
 async function loadBrand(){
   try{const d=await db.collection('config').doc('brand').get();if(d.exists&&d.data().name)Object.assign(BRAND,d.data());}catch(e){}
+}
+async function loadCategories(){
+  try{
+    const d=await db.collection('config').doc('categories').get();
+    if(d.exists&&d.data().list&&d.data().list.length){
+      CATS=d.data().list;
+      PCATS=['All',...CATS];
+    }
+  }catch(e){}
 }
 function renderBrand(){
   const nm=BRAND.name.toUpperCase();
@@ -739,13 +704,18 @@ function fProd(q){
   '<button class="ra rano" style="padding:3px 8px;font-size:10px" onclick="dProd(\''+p.id+'\')">🗑</button></div>'+
   '</div></div>').join(''):'<div class="empty"><div class="ei">📦</div><p>No products found</p></div>';
 }
-function openAP(){ePid=null;document.getElementById('mpttl').textContent='Add Product';['mp-nm','mp-br','mp-buy','mp-sell','mp-qty','mp-desc'].forEach(i=>sv(i,''));omo('prod');}
+function _fillCatSel(selId,val){
+  const el=document.getElementById(selId);if(!el)return;
+  el.innerHTML=CATS.map(c=>'<option'+(c===val?' selected':'')+'>'+c+'</option>').join('');
+}
+function openAP(){ePid=null;document.getElementById('mpttl').textContent='Add Product';['mp-nm','mp-br','mp-buy','mp-sell','mp-qty','mp-desc'].forEach(i=>sv(i,''));omo('prod');_fillCatSel('mp-cat',CATS[0]);}
 function openEP(id){
   const p=D.products.find(x=>x.id===id);if(!p)return;ePid=id;
   document.getElementById('mpttl').textContent='Edit Product';
-  sv('mp-nm',p.name);sv('mp-br',p.brand||'');sv2('mp-cat',p.category);
+  sv('mp-nm',p.name);sv('mp-br',p.brand||'');
   sv('mp-buy',p.buyPrice||'');sv('mp-sell',p.sellPrice||'');sv('mp-qty',p.qty||'');
-  sv('mp-desc',p.desc||'');sv2('mp-ret',p.returnable||'yes');omo('prod');
+  sv('mp-desc',p.desc||'');sv2('mp-ret',p.returnable||'yes');
+  omo('prod');_fillCatSel('mp-cat',p.category);
 }
 async function saveProd(){
   if(BUSY)return;const nm=gv('mp-nm');if(!nm){toast('Enter product name');return;}
@@ -925,6 +895,9 @@ async function doRP(){
 
 // ADMIN SETTINGS
 function rSettings(){
+  const gpsSaved=BRAND.shopLat?
+    '<span style="color:var(--ac);font-size:11px">📍 '+BRAND.shopGPSAddr+'</span> <a href="javascript:void(0)" onclick="window.open(\'https://maps.google.com/?q='+BRAND.shopLat+','+BRAND.shopLng+'\',\'_blank\')" style="color:var(--ac2);font-size:11px;font-weight:600"> 🗺 Map</a>':
+    '<span style="color:var(--mt);font-size:11px">No GPS set yet</span>';
   document.getElementById('s-settings').innerHTML=
   '<div class="ph"><div class="av ua-a">'+U.name.charAt(0)+'</div>'+
   '<div><div class="pn">'+U.name+'</div><div class="pr">Admin · +91 '+U.mobile+'</div></div></div>'+
@@ -937,12 +910,24 @@ function rSettings(){
   '<div class="fr"><div><label class="fl">Contact Mobile</label><input class="fi" id="st-mob" value="'+esc(BRAND.ownerMobile||ADMIN_MOBILE)+'" placeholder="Mobile"/></div>'+
   '<div><label class="fl">WhatsApp</label><input class="fi" id="st-wa" value="'+esc(BRAND.wa||'')+'" placeholder="WhatsApp no."/></div></div>'+
   '<div><label class="fl">Email</label><input class="fi" id="st-email" value="'+esc(BRAND.email||'')+'" placeholder="shop@email.com"/></div>'+
-  '<div><label class="fl">Address</label><input class="fi" id="st-addr" value="'+esc(BRAND.address||'')+'" placeholder="Shop address"/></div>'+
+  '<div><label class="fl">Shop Address</label><input class="fi" id="st-addr" value="'+esc(BRAND.address||'')+'" placeholder="Shop full address"/></div>'+
   '<div class="fr"><div><label class="fl">City</label><input class="fi" id="st-city" value="'+esc(BRAND.city||'')+'" placeholder="City"/></div>'+
   '<div><label class="fl">Working Hours</label><input class="fi" id="st-hrs" value="'+esc(BRAND.hours||'')+'" placeholder="Mon–Sat 9AM–7PM"/></div></div>'+
   '<div><label class="fl">GST Number</label><input class="fi" id="st-gst" value="'+esc(BRAND.gst||'')+'" placeholder="29XXXXX..."/></div>'+
+  '<div><label class="fl">Shop GPS Location (shown to customers)</label>'+
+  '<button class="bg" style="width:100%;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px" onclick="captureShopGPS()">'+
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg> 📍 Capture Shop GPS Location</button>'+
+  '<div id="st-shopgps">'+gpsSaved+'</div></div>'+
   '</div>'+
   '<button class="bp" onclick="saveBrand()">💾 Save Branding & Info</button>'+
+  '<hr style="border-color:var(--bd);margin:16px 0"/>'+
+  '<div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:6px">📂 Product Categories</div>'+
+  '<div style="font-size:11px;color:var(--mt);margin-bottom:8px">One category per line. These appear in shop and product forms.</div>'+
+  '<div class="fg" style="margin-bottom:10px">'+
+  '<div><label class="fl">Categories (one per line)</label>'+
+  '<textarea class="fi" id="st-cats" style="height:130px;resize:none" placeholder="General\nElectronics\nClothing...">'+CATS.join('\n')+'</textarea></div>'+
+  '</div>'+
+  '<button class="bp" onclick="saveCategories()" style="background:linear-gradient(135deg,var(--pu),#7c3aed)">💾 Save Categories</button>'+
   '<hr style="border-color:var(--bd);margin:16px 0"/>'+
   '<div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:10px">🔑 Change Your PIN</div>'+
   '<div class="fg" style="margin-bottom:10px">'+
@@ -953,15 +938,41 @@ function rSettings(){
   '<button class="bp" onclick="changeSelfPin()" style="background:linear-gradient(135deg,var(--ac2),#0066cc)">🔑 Update My PIN</button>'+
   '<hr style="border-color:var(--bd);margin:16px 0"/>'+
   '<div class="ml">'+
-  '<div class="mi dng" onclick="clearFB()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>Reset Firebase Config<svg class="arr" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>'+
   '<div class="mi dng" onclick="logout()"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out<svg class="arr" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div></div>'+
   '<div style="height:8px"></div>';
 }
+
 async function saveBrand(){
   if(BUSY)return;const nm=gv('st-nm');if(!nm){toast('Enter shop name');return;}
   BUSY=true;ld('Saving...');
-  const obj={name:nm,emoji:gv('st-em')||'🛒',tagline:gv('st-tg'),ownerName:gv('st-own'),ownerMobile:gv('st-mob'),wa:gv('st-wa'),email:gv('st-email'),address:gv('st-addr'),city:gv('st-city'),hours:gv('st-hrs'),gst:gv('st-gst')};
+  const obj={name:nm,emoji:gv('st-em')||'🛒',tagline:gv('st-tg'),ownerName:gv('st-own'),ownerMobile:gv('st-mob'),wa:gv('st-wa'),email:gv('st-email'),address:gv('st-addr'),city:gv('st-city'),hours:gv('st-hrs'),gst:gv('st-gst'),shopLat:BRAND.shopLat||null,shopLng:BRAND.shopLng||null,shopGPSAddr:BRAND.shopGPSAddr||''};
   try{await db.collection('config').doc('brand').set(obj,{merge:true});Object.assign(BRAND,obj);renderBrand();toast('✅ Saved!');}catch(e){toast('Error: '+e.message);}hl();BUSY=false;
+}
+async function captureShopGPS(){
+  if(!navigator.geolocation){toast('GPS not supported');return;}
+  const el=document.getElementById('st-shopgps');
+  if(el)el.textContent='📡 Getting location...';
+  navigator.geolocation.getCurrentPosition(async function(pos){
+    BRAND.shopLat=pos.coords.latitude;BRAND.shopLng=pos.coords.longitude;
+    try{
+      const d=await fetch('https://nominatim.openstreetmap.org/reverse?lat='+BRAND.shopLat+'&lon='+BRAND.shopLng+'&format=json').then(r=>r.json());
+      BRAND.shopGPSAddr=d.display_name||(BRAND.shopLat.toFixed(5)+', '+BRAND.shopLng.toFixed(5));
+    }catch(e){BRAND.shopGPSAddr=BRAND.shopLat.toFixed(5)+', '+BRAND.shopLng.toFixed(5);}
+    if(el)el.innerHTML='<span style="color:var(--ac)">📍 '+BRAND.shopGPSAddr+'</span> <a href="javascript:void(0)" onclick="window.open(\'https://maps.google.com/?q='+BRAND.shopLat+','+BRAND.shopLng+'\',\'_blank\')" style="color:var(--ac2);font-size:11px">🗺 Map</a>';
+    toast('✅ Shop location captured!');
+  },function(e){if(el)el.textContent='GPS failed';toast({1:'Location denied.',2:'Unavailable.',3:'Timed out.'}[e.code]||'GPS error');},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
+}
+async function saveCategories(){
+  if(BUSY)return;
+  const raw=gv('st-cats');if(!raw){toast('Enter at least one category');return;}
+  const list=raw.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!list.length){toast('Enter categories one per line');return;}
+  BUSY=true;ld('Saving categories...');
+  try{
+    await db.collection('config').doc('categories').set({list});
+    CATS=list;PCATS=['All',...CATS];
+    toast('✅ Categories saved!');
+  }catch(e){toast('Error: '+e.message);}hl();BUSY=false;
 }
 async function changeSelfPin(){
   if(BUSY)return;
@@ -973,7 +984,6 @@ async function changeSelfPin(){
   BUSY=true;ld('Updating...');
   try{await fset('users',U.id,{pin:np});U.pin=np;toast('✅ PIN changed!');sv('st-oldpin','');sv('st-newpin','');sv('st-cfmpin','');}catch(e){toast(e.message);}hl();BUSY=false;
 }
-function clearFB(){if(!confirm('Reset Firebase config and return to setup?'))return;localStorage.removeItem('sl_fb_cfg');location.reload();}
 // CUSTOMER HOME
 function rCh(){
   const mob=U?.mobile||'';
@@ -989,16 +999,21 @@ function rCh(){
   shopInfoCard()+'<div style="height:8px"></div>';
 }
 function shopInfoCard(){
-  if(!BRAND.ownerMobile&&!BRAND.address&&!BRAND.wa)return'';
+  if(!BRAND.ownerMobile&&!BRAND.address&&!BRAND.wa&&!BRAND.shopLat)return'';
+  const gpsBtn=BRAND.shopLat?
+    '<a href="javascript:void(0)" onclick="window.open(\'https://maps.google.com/?q='+BRAND.shopLat+','+BRAND.shopLng+'\',\'_blank\')" style="display:flex;align-items:center;gap:5px;flex:1;padding:9px;background:rgba(61,142,248,.1);color:var(--ac2);border-radius:9px;font-size:12px;font-weight:700;border:1px solid rgba(61,142,248,.3);justify-content:center;text-decoration:none">🗺 Find Us on Map</a>':'';
   return'<div style="background:var(--cd);border:1px solid var(--bd);border-radius:var(--rr);padding:13px;margin-bottom:10px">'+
   '<div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:6px;color:var(--ac)">'+(BRAND.emoji||'🛒')+' '+BRAND.name+'</div>'+
   '<div style="font-size:12px;color:var(--mt);line-height:1.8;margin-bottom:10px">'+
   (BRAND.ownerName?'👤 '+BRAND.ownerName+'<br>':'')+
   (BRAND.address?'📍 '+BRAND.address+'<br>':'')+
+  (BRAND.shopGPSAddr&&!BRAND.address?'📍 '+BRAND.shopGPSAddr+'<br>':'')+
   (BRAND.hours?'🕐 '+BRAND.hours:'')+'</div>'+
-  '<div style="display:flex;gap:8px">'+
-  (BRAND.wa?'<button style="flex:1;padding:9px;background:#1b4332;color:#25D366;border-radius:9px;font-size:12px;font-weight:700;border:1px solid #25D366" onclick="wa(\''+BRAND.wa+'\',\''+BRAND.name+'\')">💬 WhatsApp</button>':'<button style="flex:1;padding:9px;background:#1b4332;color:#25D366;border-radius:9px;font-size:12px;font-weight:700;border:1px solid #25D366" onclick="toast(\'Contact admin for WhatsApp\')">💬 WhatsApp</button>')+
-  (BRAND.ownerMobile?'<button style="flex:1;padding:9px;background:rgba(0,201,167,.1);color:var(--ac);border-radius:9px;font-size:12px;font-weight:700;border:1px solid rgba(0,201,167,.3)" onclick="window.location.href=\'tel:+91'+BRAND.ownerMobile+'\'">📞 Call</button>':'')+'</div></div>';
+  '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+  (BRAND.wa?'<button style="flex:1;min-width:100px;padding:9px;background:#1b4332;color:#25D366;border-radius:9px;font-size:12px;font-weight:700;border:1px solid #25D366" onclick="wa(\''+BRAND.wa+'\',\''+BRAND.name+'\')">💬 WhatsApp</button>':'<button style="flex:1;min-width:100px;padding:9px;background:#1b4332;color:#25D366;border-radius:9px;font-size:12px;font-weight:700;border:1px solid #25D366" onclick="toast(\'Contact admin for WhatsApp\')">💬 WhatsApp</button>')+
+  (BRAND.ownerMobile?'<button style="flex:1;min-width:80px;padding:9px;background:rgba(0,201,167,.1);color:var(--ac);border-radius:9px;font-size:12px;font-weight:700;border:1px solid rgba(0,201,167,.3)" onclick="window.location.href=\'tel:+91'+BRAND.ownerMobile+'\'">📞 Call</button>':'')+
+  gpsBtn+
+  '</div></div>';
 }
 
 // CUSTOMER SHOP
