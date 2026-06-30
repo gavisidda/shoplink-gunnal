@@ -347,7 +347,7 @@ input,select,textarea{font-family:var(--fb);outline:none;color:var(--tx)}
     </div>
     <button class="bs" style="width:100%" onclick="updOrd()">Update Order</button>
   </div>
-  <div style="margin-top:10px"><button class="bc" style="width:100%" onclick="cmo('vord')">Close</button></div>
+  <div style="margin-top:10px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><button class="bg" style="font-size:12px" id="print-inv-btn">🖨 Print Invoice</button><button class="rawa ra" style="font-size:12px" onclick="wa((D.orders.find(function(x){return x.id===vOid;})||{}).mobile,(D.orders.find(function(x){return x.id===vOid;})||{}).custName)">💬 WhatsApp</button></div><button class="bc" style="width:100%" onclick="cmo('vord')">Close</button></div>
 </div></div>
 
 <!-- MODAL: View Return Admin -->
@@ -470,7 +470,7 @@ input,select,textarea{font-family:var(--fb);outline:none;color:var(--tx)}
 
 <!-- MODAL: CSV Import -->
 <div class="mo" id="mo-csv"><div class="ms"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px"><div class="mh" style="margin:0"></div><button onclick="cmo('csv')" style="background:var(--cd);border:1px solid var(--bd);border-radius:50%;width:30px;height:30px;font-size:16px;color:var(--mt);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">&times;</button></div><div class="mt2">Import Products CSV</div>
-  <div style="background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--mt);line-height:1.7"><b style="color:var(--tx)">Columns:</b> name, brand, category, sellPrice, buyPrice, qty, returnable, desc</div>
+  <div style="background:rgba(0,201,167,.07);border:1px solid rgba(0,201,167,.2);border-radius:10px;padding:11px 13px;margin-bottom:10px;font-size:12px;color:var(--ac)"><b>Supported columns:</b><br><span style="color:var(--tx)">name*, brand, category, sellPrice*, buyPrice, discount, qty, returnable</span><br><span style="color:var(--mt)">sizes → S|M|L|XL &nbsp;|&nbsp; colors → Red:#e74c3c|Blue:#3498db &nbsp;|&nbsp; images → url1|url2</span><br><span style="color:var(--mt)">material, care, desc</span></div><button class="bg" style="width:100%;margin-bottom:10px;font-size:12px;padding:9px" onclick="downloadCSVTemplate()">📥 Download Sample Template</button>
   <div style="background:var(--cd);border:1.5px dashed var(--bd);border-radius:10px;padding:20px;text-align:center;margin-bottom:12px;cursor:pointer" onclick="document.getElementById('csv-file').click()">
     <div style="font-size:2rem;margin-bottom:6px">📂</div>
     <div style="font-size:13px;font-weight:600">Tap to select CSV file</div>
@@ -737,6 +737,8 @@ function rHome(){
   (D.orders.slice(0,3).map(o=>orCard(o,true)).join('')||'<div class="empty" style="padding:12px"><div class="ei">🛒</div><p>No orders yet</p></div>')+
   (pr>0?'<div class="sh" style="margin-top:4px"><span class="st">Pending Returns</span><span class="sa" onclick="goS(\'returns\')">See all →</span></div>'+
   D.returns.filter(r=>r.status==='pending').slice(0,2).map(r=>retCard(r,true)).join(''):'')+
+  rAnalytics()+
+  rAnalytics()+
   lowStockHtml()+
   '<div style="height:8px"></div>';
 }
@@ -760,8 +762,11 @@ function fProd(q){
   '<div class="lc-inf"><h4>'+p.name+'</h4><p>'+(p.brand||'—')+' · '+p.category+'</p></div>'+
   '<div class="lc-r"><div class="pt">₹'+f(p.sellPrice)+'</div>'+
   '<span class="sb '+(p.qty<=0?'so':p.qty<=2?'sl':'si')+'" style="display:block;margin-top:3px">'+(p.qty<=0?'Out':p.qty<=2?'Low:'+p.qty:p.qty+' pcs')+'</span>'+
+    '<button onclick="quickStockEdit(\''+p.id+'\','+p.qty+')" style="margin-top:3px;font-size:9px;color:var(--ac2);background:none;border:none;cursor:pointer;padding:1px 4px;display:block">Edit Stock</button>'+
+
   (p.returnable==='yes'?'<div style="font-size:9px;color:var(--ac);margin-top:2px">↩ Returnable</div>':'')+
   '<div style="display:flex;gap:4px;margin-top:5px;justify-content:flex-end">'+
+  '<button class="ra raor" style="padding:3px 8px;font-size:10px" onclick="quickStockEdit(\''+p.id+'\','+( p.qty||0)+')" title="Quick stock edit">+/-</button>'+
   '<button class="ra rav" style="padding:3px 8px;font-size:10px" onclick="openEP(\''+p.id+'\')">✏</button>'+
   '<button class="ra rano" style="padding:3px 8px;font-size:10px" onclick="dProd(\''+p.id+'\')">🗑</button></div>'+
   '</div></div>').join(''):'<div class="empty"><div class="ei">📦</div><p>No products found</p></div>';
@@ -833,14 +838,24 @@ async function dProd(id){if(!confirm('Delete this product?'))return;await fdel('
 
 // ADMIN ORDERS
 function rOrders(){
-  const pend=D.orders.filter(o=>o.status==='pending');
+  var pend=D.orders.filter(function(o){return o.status==='pending';});
   document.getElementById('s-orders').innerHTML=
-  '<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="bex" onclick="exportOrders()">Export CSV</button></div>'+
-  '<div class="itabs"><button class="itab '+(OTab==='pending'?'on':'')+'" onclick="OTab=\'pending\';rOrders()">Pending ('+pend.length+')</button>'+
-  '<button class="itab '+(OTab==='all'?'on':'')+'" onclick="OTab=\'all\';rOrders()">All ('+D.orders.length+')</button></div>'+
-  ((OTab==='all'?D.orders:pend).map(o=>orCard(o,false)).join('')||'<div class="empty"><div class="ei">🛒</div><p>No orders</p></div>')+
-  '<div style="height:8px"></div>';
+  '<div style="display:flex;gap:7px;margin-bottom:8px">'+
+  '<div class="sbar" style="flex:1;margin-bottom:0"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'+
+  '<input placeholder="Search orders..." id="ord-search"/></div>'+
+  '<button class="bex" id="ord-export-btn">Export CSV</button></div>'+
+  '<div class="itabs">'+
+  '<button class="itab '+(OTab==='pending'?'on':'')+'" id="ord-tab-pending">Pending ('+pend.length+')</button>'+
+  '<button class="itab '+(OTab==='all'?'on':'')+'" id="ord-tab-all">All ('+D.orders.length+')</button>'+
+  '</div>'+
+  '<div id="orders-list"></div>';
+  var sEl=document.getElementById('ord-search');if(sEl)sEl.addEventListener('input',function(){filterOrders(this.value);});
+  var eEl=document.getElementById('ord-export-btn');if(eEl)eEl.addEventListener('click',function(){exportOrders();});
+  var tp=document.getElementById('ord-tab-pending');if(tp)tp.addEventListener('click',function(){OTab='pending';rOrders();});
+  var ta=document.getElementById('ord-tab-all');if(ta)ta.addEventListener('click',function(){OTab='all';rOrders();});
+  filterOrders('');
 }
+
 function orCard(o,mini){
   const mu=o.addr?'https://maps.google.com/?q='+encodeURIComponent(o.addr):'';
   return'<div class="oc"><div class="oc-hd"><span class="oc-num">'+(o.refNum||o.id)+'</span><span class="bdg '+bc(o.status)+'">'+o.status+'</span></div>'+
@@ -850,7 +865,7 @@ function orCard(o,mini){
   '<div style="background:var(--sf);border-radius:7px;padding:6px 9px;font-size:11px;color:var(--mt);margin-bottom:8px">'+(o.items||[]).map(i=>i.name+'×'+i.qty).join(', ')+'</div>'+
   '<div style="display:flex;justify-content:space-between;align-items:center">'+
   '<span style="font-family:var(--fh);font-size:15px;font-weight:700;color:var(--ac2)">₹'+f(o.total||0)+'</span>'+
-  (!mini?'<div style="display:flex;gap:6px"><button class="ra rav" onclick="openVO(\''+o.id+'\')">👁 View</button>'+
+  (!mini?'<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="ra rav" onclick="openVO(\''+o.id+'\')">👁 View</button>'+
   (mu?'<button class="ra rapr" onclick="window.open(\''+mu+'\',\'_blank\')">🗺</button>':'')+
   '<button class="ra rawa" onclick="wa(\''+o.mobile+'\',\''+o.custName+'\')">💬</button></div>':
   '<button class="ra rav" onclick="openVO(\''+o.id+'\')">View</button>')+
@@ -870,6 +885,8 @@ function openVO(id){
   (o.adminNote?'<div style="background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:7px;padding:7px 10px;margin-top:8px;font-size:11px;color:var(--or)">'+o.adminNote+'</div>':'')+
   '<button class="bg" style="width:100%;margin-top:10px;font-size:12px;padding:8px" onclick="openNotes(\'orders\',\''+id+'\')">📋 Notes History</button>';
   sv2('vord-st',o.status);sv('vord-note','');omo('vord');
+  var pib=document.getElementById('print-inv-btn');
+  if(pib){var oid2=id;pib.onclick=function(){printInvoice(oid2);};}
 }
 async function updOrd(){
   if(BUSY)return;BUSY=true;ld('Updating...');
@@ -1036,6 +1053,8 @@ function rSettings(){
   '<button class="bp" onclick="saveCategories()" style="background:linear-gradient(135deg,var(--pu),#7c3aed)">Save Categories</button>'+
 
   '<hr style="border-color:var(--bd);margin:14px 0"/>'+
+  rAnalytics()+
+  '<hr style="border-color:var(--bd);margin:14px 0"/>'+
   '<div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:8px">Change Your PIN</div>'+
   '<div class="fg" style="margin-bottom:10px">'+
   '<div><label class="fl">Current PIN</label><input class="fi" type="password" id="st-oldpin" maxlength="4" placeholder="Current 4-digit PIN" inputmode="numeric"/></div>'+
@@ -1043,6 +1062,9 @@ function rSettings(){
   '<div><label class="fl">Confirm New PIN</label><input class="fi" type="password" id="st-cfmpin" maxlength="4" placeholder="Confirm new PIN" inputmode="numeric"/></div>'+
   '</div>'+
   '<button class="bp" onclick="changeSelfPin()" style="background:linear-gradient(135deg,var(--ac2),#0066cc)">Update My PIN</button>'+
+  '<hr style="border-color:var(--bd);margin:14px 0"/>'+
+  '<div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:6px">Promo Codes</div>'+
+  '<div style="font-size:11px;color:var(--mt);margin-bottom:10px;line-height:1.7">Active codes: <b style="color:var(--ac)">WELCOME10</b> (10% off) &nbsp; <b style="color:var(--ac)">FLAT100</b> (Rs.100 off) &nbsp; <b style="color:var(--ac)">TEXTMART20</b> (20% off)</div>'+
   '<hr style="border-color:var(--bd);margin:14px 0"/>'+
   '<div class="ml"><div class="mi dng" onclick="logout()">'+
   '<svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'+
@@ -1297,7 +1319,7 @@ function renderPD(p){
   var body=document.getElementById('pd-body');if(!body)return;
   body.innerHTML=
   '<div style="position:relative;height:240px;background:#0d1b2a;border-radius:10px;overflow:hidden;margin-bottom:10px;display:flex;align-items:center;justify-content:center">'+
-  (curImg?'<img src="'+curImg+'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">':'')+
+  (curImg?'<img src="'+curImg+'" onclick="zoomImg(\''+curImg+'\')" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:zoom-in">':'')+
   '<div style="font-size:5rem;z-index:1'+(curImg?';display:none':'')+'">&#128247;</div>'+
   (disc?'<div style="position:absolute;top:10px;left:10px;background:var(--rd);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:8px;z-index:2">'+p.discount+'% OFF</div>':'')+
   '</div>'+th+
@@ -1423,7 +1445,7 @@ function opChk(){
   document.getElementById('co-user-mob').textContent='+91 '+U.mobile;
   sv('co-addr','');sv('co-lmk','');sv('co-note','');
   const d=document.getElementById('co-drop');if(d)d.style.display='none';
-  _selPay='cod';_selAdminId=null;
+  _appliedPromo=null;_selPay='cod';_selAdminId=null;
   document.getElementById('pay-cod').classList.add('on');
   document.getElementById('pay-upi').classList.remove('on');
   document.getElementById('upi-admin-sel').style.display='none';
@@ -1472,7 +1494,7 @@ async function placeOrder(){
       landmark:gv('co-lmk'),custNote:gv('co-note'),
       payment:_selPay,payTo:_selPay==='upi'?_selAdminId:null,
       items:CART.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,cat:i.cat,returnable:i.returnable})),
-      total:tot,status:'pending',date:td(),adminNote:''
+      total:tot2,subtotal:subtotal,promoCode:_appliedPromo?_appliedPromo.code:null,promoDiscount:promoDiscount,status:'pending',date:td(),adminNote:''
     });
     CART=[];uCart();cmo('chk');rCordrs();rCh();toast('✅ Order placed: '+num);
   }catch(e){toast(e.message);}hl();BUSY=false;
@@ -1766,48 +1788,127 @@ document.addEventListener('click',function(e){if(!e.target.closest('.loc'))docum
 
 // CSV
 let _csvRows=[];
+function downloadCSVTemplate(){
+  var Q='"';
+  var hdr=['name','brand','category','sellPrice','buyPrice','discount','qty','returnable','sizes','colors','images','material','care','desc'];
+  var ex=[
+    ['Floral Kurti','Fabindia','Clothing',799,400,10,50,'yes','S|M|L|XL','Red:#e74c3c|Blue:#3498db','https://i.ibb.co/example/img1.jpg','Cotton','Hand wash','Beautiful floral print kurti perfect for casual wear'],
+    ['Slim Jeans','Levis','Clothing',1299,700,0,30,'no','28|30|32|34|36','Black:#1a1a1a|Blue:#1e3a5f','','Denim','Machine wash','Slim fit stretchable jeans']
+  ];
+  var rows=[hdr].concat(ex);
+  var csv=rows.map(function(r){return r.map(function(c){return Q+String(c==null?'':c).replace(new RegExp(Q,'g'),Q+Q)+Q;}).join(',');}).join('\n');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='textmart_product_template.csv';a.click();
+  toast('Template downloaded!');
+}
+
 function loadCSV(input){
-  const file=input.files[0];if(!file)return;
+  var file=input.files[0];if(!file)return;
   document.getElementById('csv-fname').textContent=file.name;
-  const reader=new FileReader();
+  var reader=new FileReader();
   reader.onload=function(e){
-    const lines=e.target.result.split(/\r?\n/).filter(l=>l.trim());
-    if(lines.length<2){toast('CSV needs header + data');return;}
-    const hdr=lines[0].split(',').map(h=>h.replace(/"/g,'').trim().toLowerCase());
+    var text=e.target.result;
+    var lines=text.split(/\r?\n/).filter(function(l){return l.trim();});
+    if(lines.length<2){toast('CSV needs header row + at least 1 product');return;}
+    // Parse header
+    var hdr=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim().toLowerCase().replace(/\s+/g,'');});
     _csvRows=[];
-    for(let i=1;i<lines.length;i++){
-      const cols=lines[i].match(/(".*?"|[^,]+)/g)||[];
-      const row={};hdr.forEach((h,j)=>{row[h]=(cols[j]||'').replace(/"/g,'').trim();});
-      if(!row.name)continue;
-      _csvRows.push({name:row.name,brand:row.brand||'',category:row.category||'General',
-        sellPrice:parseFloat(row.sellprice||0)||0,buyPrice:parseFloat(row.buyprice||0)||0,
-        qty:parseInt(row.qty||0)||0,returnable:row.returnable||'yes',desc:row.desc||'',date:td()});
+    var errors=[];
+    for(var i=1;i<lines.length;i++){
+      // Handle quoted fields properly
+      var cols=[];var cur='';var inQ=false;
+      for(var ci=0;ci<lines[i].length;ci++){
+        var ch=lines[i][ci];
+        if(ch==='"'){inQ=!inQ;}
+        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+        else{cur+=ch;}
+      }
+      cols.push(cur.trim());
+      var row={};
+      hdr.forEach(function(h,j){row[h]=(cols[j]||'').replace(/^"|"$/g,'').trim();});
+      if(!row.name){continue;}
+      // Parse colors: "Red:#e74c3c|Blue:#3498db"
+      var colors=[];
+      if(row.colors){
+        row.colors.split('|').forEach(function(c){
+          var parts=c.split(':');
+          if(parts.length===2){colors.push({name:parts[0].trim(),hex:parts[1].trim()});}
+          else if(parts[0].trim()){colors.push({name:parts[0].trim(),hex:'#888888'});}
+        });
+      }
+      // Parse sizes: "S|M|L|XL" or "S,M,L,XL"
+      var sizes=[];
+      if(row.sizes){sizes=row.sizes.split(/[|,]/).map(function(s){return s.trim();}).filter(Boolean);}
+      // Parse images: "url1|url2|url3"
+      var images=[];
+      if(row.images){images=row.images.split('|').map(function(s){return s.trim();}).filter(Boolean);}
+      var disc=parseFloat(row.discount||row['discount%']||0)||0;
+      var sell=parseFloat(row.sellprice||row['sell price']||row['sellprice(rs)']||0)||0;
+      var buy=parseFloat(row.buyprice||row['buy price']||row['buyprice(rs)']||0)||0;
+      var qty=parseInt(row.qty||row.stock||row.quantity||0)||0;
+      if(!sell){errors.push('Row '+(i+1)+': '+row.name+' - missing sell price');continue;}
+      _csvRows.push({
+        name:row.name,brand:row.brand||'',
+        category:row.category||CATS[0]||'General',
+        sellPrice:sell,buyPrice:buy,
+        discount:disc,qty:qty,
+        returnable:(row.returnable||'yes').toLowerCase()==='no'?'no':'yes',
+        sizes:sizes,colors:colors,images:images,
+        material:row.material||'',care:row.care||'',
+        desc:row.desc||row.description||'',date:td()
+      });
     }
     document.getElementById('csv-preview').style.display='block';
-    document.getElementById('csv-count').textContent=_csvRows.length+' products ready';
-    document.getElementById('csv-rows').innerHTML=_csvRows.map(r=>'• '+r.name+' — ₹'+r.sellPrice).join('<br>');
-    const btn=document.getElementById('csv-import-btn');btn.disabled=false;btn.style.opacity='1';
+    document.getElementById('csv-count').textContent=_csvRows.length+' products ready to import'+(errors.length?' ('+errors.length+' rows skipped)':'');
+    document.getElementById('csv-rows').innerHTML=_csvRows.map(function(r){
+      var disc=r.discount>0?' (-'+r.discount+'%)':'';
+      return '<div style="padding:4px 0;border-bottom:1px solid var(--bd);font-size:11px">'+
+      '<b>'+r.name+'</b> &middot; '+r.category+' &middot; Rs.'+f(r.sellPrice)+disc+
+      (r.sizes.length?' &middot; Sizes: '+r.sizes.slice(0,3).join(','+(r.sizes.length>3?'...':'')):'')+'<br>'+
+      (r.colors.length?'Colors: '+r.colors.map(function(c){return '<span style="display:inline-block;width:10px;height:10px;background:'+c.hex+';border-radius:50%;margin:0 2px;vertical-align:middle"></span>'+c.name;}).join(', ')+'<br>':'')+
+      (r.images.length?'<span style="color:var(--ac)">'+r.images.length+' image(s) linked</span>':'<span style="color:var(--mt)">No images</span>')+
+      '</div>';
+    }).join('')+(errors.length?'<div style="color:var(--rd);margin-top:6px;font-size:10px">Skipped: '+errors.join(', ')+'</div>':'');
+    var btn=document.getElementById('csv-import-btn');btn.disabled=false;btn.style.opacity='1';
   };
   reader.readAsText(file);
 }
+
 async function doCSVImport(){
-  if(!_csvRows.length||BUSY)return;BUSY=true;ld('Importing...');
-  let ok=0;
-  for(const row of _csvRows){try{await fadd('products',row);ok++;}catch(e){}}
+  if(!_csvRows.length||BUSY)return;BUSY=true;ld('Importing '+_csvRows.length+' products...');
+  var ok=0,fail=0;
+  for(var i=0;i<_csvRows.length;i++){
+    try{await fadd('products',_csvRows[i]);ok++;}
+    catch(e){fail++;console.warn('Import row failed:',e);}
+  }
   hl();BUSY=false;cmo('csv');
   document.getElementById('csv-preview').style.display='none';
   document.getElementById('csv-fname').textContent='No file selected';
   document.getElementById('csv-import-btn').disabled=true;
   document.getElementById('csv-import-btn').style.opacity='.5';
-  _csvRows=[];rProds();toast('✅ Imported '+ok+' products!');
+  _csvRows=[];rProds();
+  toast(ok+' imported'+(fail?' ('+fail+' failed)':'')+'!');
 }
+
 function doExp(){
-  const rows=[['ID','Name','Brand','Category','Sell Price','Buy Price','Stock','Returnable']];
-  D.products.forEach(p=>rows.push([p.id,p.name,p.brand,p.category,p.sellPrice,p.buyPrice,p.qty,p.returnable]));
-  const csv=rows.map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\n');
-  const a=document.createElement('a');
+  var Q='"';
+  var hdr=['id','name','brand','category','sellPrice','buyPrice','discount%','qty','returnable','sizes','colors','images','material','care','desc'];
+  var rows=[hdr];
+  D.products.forEach(function(p){
+    rows.push([
+      p.id,p.name,p.brand||'',p.category,p.sellPrice,p.buyPrice||0,p.discount||0,p.qty||0,p.returnable||'yes',
+      (p.sizes||[]).join('|'),
+      (p.colors||[]).map(function(c){return c.name+':'+c.hex;}).join('|'),
+      (p.images||[]).join('|'),
+      p.material||'',p.care||'',p.desc||''
+    ]);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return Q+String(c==null?'':c).replace(new RegExp(Q,'g'),Q+Q)+Q;}).join(',');}).join('\n');
+  var a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download='products_'+td()+'.csv';a.click();toast('✅ Exported!');
+  a.download='textmart_products_'+td()+'.csv';a.click();
+  toast('Exported '+D.products.length+' products!');
 }
 
 // UTILITIES
@@ -1997,6 +2098,209 @@ function shareProduct(p){
   msg+='\nShop at '+BRAND.name;
   if(BRAND.wa)msg+=' | WhatsApp: +91'+BRAND.wa;
   window.open('https://wa.me/?text='+encodeURIComponent(msg));
+}
+
+
+// ═══════════════════════════════════════════════
+// NEXT LEVEL ENHANCEMENTS
+// ═══════════════════════════════════════════════
+
+// ── INLINE STOCK EDIT in product list ─────────────────────────────────────
+function quickStockEdit(pid,currentQty){
+  var p=D.products.find(function(x){return x.id===pid;});if(!p)return;
+  var newQty=prompt('Update stock for "'+p.name+'"\nCurrent: '+currentQty+' pcs\n\nEnter new quantity:',currentQty);
+  if(newQty===null)return;
+  var qty=parseInt(newQty);
+  if(isNaN(qty)||qty<0){toast('Enter a valid number');return;}
+  ld('Updating stock...');
+  fset('products',pid,{qty:qty}).then(function(){
+    hl();rProds();toast('Stock updated to '+qty+' pcs');
+  }).catch(function(e){hl();toast('Error: '+e.message);});
+}
+
+// ── ORDER SEARCH ───────────────────────────────────────────────────────────
+var _orderSearch='';
+function filterOrders(q){
+  _orderSearch=(q||'').toLowerCase();
+  var tab=OTab;
+  var list=tab==='pending'?D.orders.filter(function(o){return o.status==='pending';}):D.orders;
+  if(_orderSearch){
+    list=list.filter(function(o){
+      return (o.refNum||'').toLowerCase().includes(_orderSearch)||
+             (o.custName||'').toLowerCase().includes(_orderSearch)||
+             (o.mobile||'').includes(_orderSearch)||
+             (o.addr||'').toLowerCase().includes(_orderSearch);
+    });
+  }
+  var el=document.getElementById('orders-list');
+  if(el)el.innerHTML=list.length?list.map(function(o){return orCard(o,false);}).join(''):'<div class="empty"><div class="ei">🔍</div><p>No orders found</p></div>';
+}
+
+// ── PRINT INVOICE ─────────────────────────────────────────────────────────
+function printInvoice(oid){
+  var o=D.orders.find(function(x){return x.id===oid;});if(!o)return;
+  var rows=(o.items||[]).map(function(i){
+    return '<tr><td style="padding:8px 6px;border-bottom:1px solid #eee">'+i.name+
+    (i.color?' ('+i.color+(i.size?', '+i.size:'')+')':(i.size?' ('+i.size+')':''))+
+    '</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center">'+i.qty+'</td>'+
+    '<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:right">Rs.'+f(i.price||0)+'</td>'+
+    '<td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:right">Rs.'+f((i.price||0)*i.qty)+'</td></tr>';
+  }).join('');
+  var win=window.open('','_blank');
+  win.document.write('<!DOCTYPE html><html><head><title>Invoice '+(o.refNum||o.id)+'</title>'+
+  '<style>body{font-family:Arial,sans-serif;max-width:600px;margin:30px auto;color:#222;font-size:13px}'+
+  'h1{font-size:22px;margin:0}h2{font-size:15px;color:#666;margin:4px 0 0}'+
+  '.hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #000}'+
+  'table{width:100%;border-collapse:collapse}th{text-align:left;padding:8px 6px;border-bottom:2px solid #000;font-size:12px}'+
+  '.tot{font-size:15px;font-weight:700;text-align:right;padding:10px 6px}'+
+  '.info{background:#f9f9f9;padding:12px;border-radius:8px;margin-bottom:16px;font-size:12px;line-height:1.8}'+
+  '@media print{button{display:none}}</style></head><body>'+
+  '<div class="hd"><div><h1>'+BRAND.name+'</h1><h2>'+BRAND.tagline+'</h2>'+
+  (BRAND.address?'<div style="font-size:11px;color:#666;margin-top:4px">'+BRAND.address+'</div>':'')+
+  (BRAND.ownerMobile?'<div style="font-size:11px;color:#666">+91 '+BRAND.ownerMobile+'</div>':'')+
+  '</div><div style="text-align:right"><div style="font-size:18px;font-weight:700;color:#333">INVOICE</div>'+
+  '<div style="font-size:13px;color:#666">'+( o.refNum||o.id)+'</div>'+
+  '<div style="font-size:12px;color:#666">Date: '+o.date+'</div></div></div>'+
+  '<div class="info">'+
+  '<b>Bill To:</b> '+o.custName+' &nbsp;|&nbsp; +91 '+o.mobile+'<br>'+
+  'Address: '+(o.addr||'—')+(o.landmark?' ('+o.landmark+')':'')+'<br>'+
+  'Payment: '+(o.payment==='upi'?'UPI / Online':'Cash on Delivery')+' &nbsp;|&nbsp; Status: <b>'+o.status+'</b>'+
+  '</div>'+
+  '<table><thead><tr><th>Product</th><th style="text-align:center">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th></tr></thead>'+
+  '<tbody>'+rows+'</tbody>'+
+  '<tfoot><tr><td colspan="3" class="tot">Grand Total</td><td class="tot">Rs.'+f(o.total||0)+'</td></tr></tfoot>'+
+  '</table>'+
+  '<div style="margin-top:20px;font-size:11px;color:#888;text-align:center">Thank you for shopping with '+BRAND.name+'!</div>'+
+  '<div style="margin-top:14px;text-align:center"><button onclick="window.print()" style="padding:8px 20px;background:#000;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">Print Invoice</button></div>'+
+  '</body></html>');
+  win.document.close();
+}
+
+// ── AUTO REFRESH ORDERS for admin (every 60s) ─────────────────────────────
+var _autoRefreshTimer=null;
+function startAutoRefresh(){
+  if(ROLE!=='admin')return;
+  _autoRefreshTimer=setInterval(function(){
+    if(ROLE!=='admin')return;
+    fall('orders').then(function(res){
+      var oldPending=D.orders.filter(function(o){return o.status==='pending';}).length;
+      D.orders=res;
+      var newPending=D.orders.filter(function(o){return o.status==='pending';}).length;
+      if(newPending>oldPending){
+        toast('New order received!');
+        var cur=document.querySelector('.scr.on');
+        if(cur){var id=cur.id.replace('s-','');if(SCRFN[id])SCRFN[id]();}
+        buildNav();
+      }
+    }).catch(function(){});
+  },60000);
+}
+function stopAutoRefresh(){clearInterval(_autoRefreshTimer);}
+
+// ── PROMO/DISCOUNT CODE ───────────────────────────────────────────────────
+var PROMO_CODES={
+  'WELCOME10':{type:'percent',value:10,label:'10% off'},
+  'FLAT100':{type:'flat',value:100,label:'Rs.100 off'},
+  'TEXTMART20':{type:'percent',value:20,label:'20% off'}
+};
+var _appliedPromo=null;
+
+function applyPromo(){
+  var code=(document.getElementById('promo-input')||{value:''}).value.trim().toUpperCase();
+  if(!code){toast('Enter a promo code');return;}
+  var promo=PROMO_CODES[code];
+  if(!promo){toast('Invalid promo code');return;}
+  _appliedPromo={code:code,...promo};
+  updateCheckoutTotal();
+  toast('Promo applied: '+promo.label+'!');
+  var el=document.getElementById('promo-applied');
+  if(el)el.innerHTML='<span style="color:var(--ac);font-size:12px;font-weight:700">'+promo.label+' applied!</span>';
+}
+function removePromo(){
+  _appliedPromo=null;
+  updateCheckoutTotal();
+  var el=document.getElementById('promo-applied');
+  if(el)el.innerHTML='';
+  var inp=document.getElementById('promo-input');
+  if(inp)inp.value='';
+  toast('Promo removed');
+}
+function getPromoDiscount(subtotal){
+  if(!_appliedPromo)return 0;
+  if(_appliedPromo.type==='percent')return Math.round(subtotal*_appliedPromo.value/100);
+  if(_appliedPromo.type==='flat')return Math.min(_appliedPromo.value,subtotal);
+  return 0;
+}
+function updateCheckoutTotal(){
+  var subtotal=CART.reduce(function(s,i){return s+i.qty*i.price;},0);
+  var discount=getPromoDiscount(subtotal);
+  var total=subtotal-discount;
+  var el=document.getElementById('co-tot');
+  if(el)el.textContent='Rs.'+f(total);
+  var sub=document.getElementById('co-subtotal');
+  if(sub)sub.style.display=discount>0?'flex':'none';
+  var sav=document.getElementById('co-savings');
+  if(sav)sav.textContent='Save Rs.'+f(discount)+' ('+(_appliedPromo?_appliedPromo.label:'')+')';
+}
+
+// ── PRODUCT IMAGE ZOOM ────────────────────────────────────────────────────
+function zoomImg(src){
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out';
+  ov.innerHTML='<img src="'+src+'" style="max-width:96vw;max-height:96vh;object-fit:contain;border-radius:8px"><button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer">&times;</button>';
+  ov.onclick=function(){document.body.removeChild(ov);};
+  document.body.appendChild(ov);
+}
+
+// ── ADMIN ANALYTICS ───────────────────────────────────────────────────────
+function rAnalytics(){
+  var total=D.orders.filter(function(o){return o.status==='delivered';}).reduce(function(s,o){return s+(o.total||0);},0);
+  var thisMonth=new Date().toISOString().slice(0,7);
+  var monthOrders=D.orders.filter(function(o){return (o.date||'').startsWith(thisMonth);});
+  var monthRev=monthOrders.filter(function(o){return o.status==='delivered';}).reduce(function(s,o){return s+(o.total||0);},0);
+  var pending=D.orders.filter(function(o){return o.status==='pending';}).length;
+  var returns=D.returns.filter(function(r){return r.status==='pending';}).length;
+  // Category breakdown
+  var catMap={};
+  D.orders.forEach(function(o){
+    (o.items||[]).forEach(function(i){
+      catMap[i.cat||'Other']=(catMap[i.cat||'Other']||0)+i.qty;
+    });
+  });
+  var topCats=Object.keys(catMap).sort(function(a,b){return catMap[b]-catMap[a];}).slice(0,5);
+  // Top products
+  var prodMap={};
+  D.orders.forEach(function(o){
+    (o.items||[]).forEach(function(i){
+      prodMap[i.name]=(prodMap[i.name]||0)+i.qty;
+    });
+  });
+  var topProds=Object.keys(prodMap).sort(function(a,b){return prodMap[b]-prodMap[a];}).slice(0,5);
+
+  return '<div style="background:var(--cd);border:1px solid var(--bd);border-radius:var(--rr);padding:14px;margin-bottom:10px">'+
+  '<div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:10px">Analytics Overview</div>'+
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">'+
+  '<div style="background:var(--sf);border-radius:10px;padding:10px"><div style="font-size:10px;color:var(--mt);font-weight:700;text-transform:uppercase">Total Revenue</div><div style="font-family:var(--fh);font-size:20px;font-weight:700;color:var(--ac)">Rs.'+f(total)+'</div></div>'+
+  '<div style="background:var(--sf);border-radius:10px;padding:10px"><div style="font-size:10px;color:var(--mt);font-weight:700;text-transform:uppercase">This Month</div><div style="font-family:var(--fh);font-size:20px;font-weight:700;color:var(--ac2)">Rs.'+f(monthRev)+'</div></div>'+
+  '<div style="background:var(--sf);border-radius:10px;padding:10px"><div style="font-size:10px;color:var(--mt);font-weight:700;text-transform:uppercase">Pending Orders</div><div style="font-family:var(--fh);font-size:20px;font-weight:700;color:var(--or)">'+pending+'</div></div>'+
+  '<div style="background:var(--sf);border-radius:10px;padding:10px"><div style="font-size:10px;color:var(--mt);font-weight:700;text-transform:uppercase">Pending Returns</div><div style="font-family:var(--fh);font-size:20px;font-weight:700;color:var(--rd)">'+returns+'</div></div>'+
+  '</div>'+
+  (topProds.length?'<div style="font-size:11px;font-weight:700;color:var(--mt);text-transform:uppercase;margin-bottom:7px">Top Selling Products</div>'+
+  topProds.map(function(nm,i){
+    var max=prodMap[topProds[0]];var pct=Math.round((prodMap[nm]/max)*100);
+    return '<div style="margin-bottom:7px">'+
+    '<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>'+nm+'</span><span style="color:var(--ac);font-weight:700">'+prodMap[nm]+' sold</span></div>'+
+    '<div style="background:var(--sf);border-radius:4px;height:6px"><div style="background:var(--ac);border-radius:4px;height:6px;width:'+pct+'%"></div></div>'+
+    '</div>';
+  }).join(''):'')+
+  (topCats.length?'<div style="font-size:11px;font-weight:700;color:var(--mt);text-transform:uppercase;margin:10px 0 7px">Sales by Category</div>'+
+  topCats.map(function(cat){
+    var max=catMap[topCats[0]];var pct=Math.round((catMap[cat]/max)*100);
+    return '<div style="margin-bottom:6px">'+
+    '<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>'+cat+'</span><span style="color:var(--ac2);font-weight:700">'+catMap[cat]+' units</span></div>'+
+    '<div style="background:var(--sf);border-radius:4px;height:5px"><div style="background:var(--ac2);border-radius:4px;height:5px;width:'+pct+'%"></div></div>'+
+    '</div>';
+  }).join(''):'')+'</div>';
 }
 
 window.addEventListener('DOMContentLoaded',init);
